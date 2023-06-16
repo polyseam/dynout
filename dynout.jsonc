@@ -1,6 +1,7 @@
 {
   "table_name": "polyseam-events",
   "attributes": [
+    "event_uuid",
     "event_type",
     "redirect_target",
     "event_version",

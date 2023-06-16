@@ -116,9 +116,9 @@ export default async function main() {
 
     const rows = documents.map((document) => {
       const properties = Object.values(document).map((property) => {
-        if (typeof property === "string") {
-          return `"${property}"`;
-        }
+        const p = `"${property}"`;
+        if (p === `"null"`) return '""';
+        return p;
       });
       const row = properties.join(",");
       return row;

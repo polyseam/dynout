@@ -19,6 +19,7 @@ export { unmarshall } from "npm:@aws-sdk/util-dynamodb";
 export type {
   AttributeValue,
   ScanCommandInput,
+  ScanCommandOutput,
 } from "npm:@aws-sdk/client-dynamodb@3.267.0";
 
 const dotenv = {

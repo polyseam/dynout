@@ -8,6 +8,7 @@ import {
   path,
   ScanCommand,
   ScanCommandInput,
+  ScanCommandOutput,
   SpinnerTypes,
   TerminalSpinner,
   unmarshall,
@@ -73,7 +74,11 @@ export default async function main() {
 
     const scanCommand = new ScanCommand(scanCommandInput);
 
-    const { Items = [], LastEvaluatedKey } = await dynamoDB.send(scanCommand);
+    const scanCommandOutput: ScanCommandOutput = await dynamoDB.send(
+      scanCommand,
+    );
+
+    const { Items = [], LastEvaluatedKey } = scanCommandOutput;
 
     documents.push(...Items.map((item) => {
       const unmarshalledDoc = unmarshall(item);

@@ -78,10 +78,10 @@ export default async function main() {
     documents.push(...Items.map((item) => {
       const unmarshalledDoc = unmarshall(item);
       const document: Record<string, unknown> = {};
+      // looping through the attributes Array specified in the config guarantees column order
       for (const attribute of dynoutConfig.attributes) {
         // project_nulls will add the value null for any attribute missing
         const val = unmarshalledDoc[attribute];
-
         if (dynoutConfig?.project_nulls) {
           document[attribute] = val ?? null;
         } else {
@@ -121,7 +121,7 @@ export default async function main() {
         }
       });
       const row = properties.join(",");
-      return `${row}`;
+      return row;
     });
 
     const csv = [

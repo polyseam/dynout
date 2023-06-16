@@ -80,10 +80,12 @@ export default async function main() {
       const document: Record<string, unknown> = {};
       for (const attribute of dynoutConfig.attributes) {
         // project_nulls will add the value null for any attribute missing
+        const val = unmarshalledDoc[attribute];
+
         if (dynoutConfig?.project_nulls) {
-          document[attribute] = unmarshalledDoc[attribute] ?? null;
+          document[attribute] = val ?? null;
         } else {
-          document[attribute] = unmarshalledDoc[attribute];
+          document[attribute] = val;
         }
       }
       return document;
@@ -111,15 +113,20 @@ export default async function main() {
 
   if (dynoutConfig?.output?.format === "csv") {
     const columnHeaders = dynoutConfig.attributes.join(",");
-    const rows = documents.map((document) =>
-      dynoutConfig.attributes.map((attribute) => document[attribute]).join(
-        ",",
-      )
-    ).join("\n");
+
+    const rows = documents.map((document) => {
+      const properties = Object.values(document).map((property) => {
+        if (typeof property === "string") {
+          return `"${property}"`;
+        }
+      });
+      const row = properties.join(",");
+      return `${row}`;
+    });
 
     const csv = [
       columnHeaders,
-      rows,
+      ...rows,
     ].join("\n");
 
     await Deno.writeTextFile(

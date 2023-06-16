@@ -1,0 +1,16 @@
+{
+  "tasks": {
+    "start": "deno run -A main.ts",
+    "build": "deno fmt && deno lint"
+  },
+  "lint": {
+    "exclude": ["results/"]
+  },
+  "fmt": {
+    "exclude": ["results/"]
+  },
+  "imports": {
+    "src/": "./src/",
+    "deps": "./src/deps.ts"
+  }
+}

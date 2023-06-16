@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "dynout",
+  "$comment": "The root of the cndi config schema",
+  "description": "A configuration file describing a DynamoDB table export",
+  "required": ["table_name", "attributes"],
+  "additionalProperties": false,
+  "properties": {
+    "table_name": {
+      "type": "string",
+      "description": "The name of the DynamoDB Table"
+    },
+    "attributes": {
+      "type": "array",
+      "description": "Ordered list of attributes that should be included in the output",
+      "items": {
+        "type": "string"
+      }
+    },
+    "project_nulls": {
+      "type": "boolean",
+      "description": "If true null values will be included as `null`",
+      "default": false
+    },
+    "output": {
+      "type": "object",
+      "description": "Configures the resulting output of the export",
+      "properties": {
+        "format": {
+          "type": "string",
+          "description": "The format of the output",
+          "enum": ["json", "csv"],
+          "default": "json"
+        },
+        "path": {
+          "type": "string",
+          "description": "The path to write the output to",
+          "default": "./results"
+        }
+      }
+    }
+  }
+}

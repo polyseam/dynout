@@ -1,0 +1,29 @@
+{
+  "table_name": "polyseam-events",
+  "attributes": [
+    "event_type",
+    "redirect_target",
+    "event_version",
+    "request_pathname",
+    "is_bot",
+    "user_agent_header",
+    "event_timestamp",
+    "repo_url",
+    "debug",
+    "repo_id",
+    "cndi_binary_version",
+    "exit_code",
+    "command",
+    "referer_header",
+    "utm_id",
+    "utm_medium",
+    "utm_campaign",
+    "utm_content",
+    "utm_source",
+    "x_forwarded_for_header"
+  ],
+  "project_nulls": true,
+  "output": {
+    "format": "csv"
+  }
+}

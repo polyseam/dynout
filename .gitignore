@@ -5,3 +5,4 @@ results/*.json
 .env
 snippets.txt
 unique_repos.csv
+.DS_Store

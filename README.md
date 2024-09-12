@@ -15,7 +15,7 @@ Dynout requires 3 environment variables to be set:
 Dynout uses a config file like the one below.
 
 The attributes Array is ordered and the order represents the order of the
-columns in the output.
+columns in the output. The first attribute will be used to sort the results.
 
 The `output.format` property can be set to `"csv"` or `"json"`, and it defaults
 to JSON.
@@ -24,13 +24,13 @@ to JSON.
 {
   "table_name": "polyseam-events",
   "attributes": [
+    "event_timestamp",
     "event_type",
     "redirect_target",
     "event_version",
     "request_pathname",
     "is_bot",
     "user_agent_header",
-    "event_timestamp",
     "referer_header",
     "utm_id",
     "utm_medium",

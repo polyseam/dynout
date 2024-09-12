@@ -4,10 +4,7 @@ export { Command } from "https://deno.land/x/cliffy@v0.25.7/command/mod.ts";
 export * as path from "https://deno.land/std@0.180.0/path/mod.ts";
 export { cyan } from "https://deno.land/std@0.192.0/fmt/colors.ts";
 
-export {
-  SpinnerTypes,
-  TerminalSpinner,
-} from "https://deno.land/x/spinners@v1.1.2/mod.ts";
+export { Spinner } from "jsr:@std/cli";
 
 export {
   DynamoDBClient,

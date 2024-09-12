@@ -9,8 +9,7 @@ import {
   ScanCommand,
   ScanCommandInput,
   ScanCommandOutput,
-  SpinnerTypes,
-  TerminalSpinner,
+  Spinner,
   unmarshall,
 } from "deps";
 
@@ -51,9 +50,9 @@ export default async function main() {
     Deno.exit(1);
   }
 
-  const dynoutConfig = await JSONC.parse(
+  const dynoutConfig = (await JSONC.parse(
     await Deno.readTextFile(dynoutCommand.options.config),
-  ) as DynoutConfig;
+  )) as DynoutConfig;
 
   const dynamoDB = new DynamoDBClient({
     region,
@@ -80,32 +79,32 @@ export default async function main() {
 
     const { Items = [], LastEvaluatedKey } = scanCommandOutput;
 
-    documents.push(...Items.map((item) => {
-      const unmarshalledDoc = unmarshall(item);
-      const document: Record<string, unknown> = {};
-      // looping through the attributes Array specified in the config guarantees column order
-      for (const attribute of dynoutConfig.attributes) {
-        // project_nulls will add the value null for any attribute missing
-        const val = unmarshalledDoc[attribute];
-        if (dynoutConfig?.project_nulls) {
-          document[attribute] = val ?? null;
-        } else {
-          document[attribute] = val;
+    documents.push(
+      ...Items.map((item) => {
+        const unmarshalledDoc = unmarshall(item);
+        const document: Record<string, unknown> = {};
+        // looping through the attributes Array specified in the config guarantees column order
+        for (const attribute of dynoutConfig.attributes) {
+          // project_nulls will add the value null for any attribute missing
+          const val = unmarshalledDoc[attribute];
+          if (dynoutConfig?.project_nulls) {
+            document[attribute] = val ?? null;
+          } else {
+            document[attribute] = val;
+          }
         }
-      }
-      return document;
-    }));
+        return document;
+      }),
+    );
 
     if (LastEvaluatedKey) {
       await doScan(LastEvaluatedKey);
     }
   };
-  const spinner = new TerminalSpinner({
-    text: `exporting all documents from Table '${dynoutConfig.table_name}'`,
+
+  const spinner = new Spinner({
+    message: `exporting all documents from Table '${dynoutConfig.table_name}'`,
     color: "cyan",
-    indent: 2,
-    spinner: SpinnerTypes.windows,
-    writer: Deno.stdout,
   });
 
   spinner.start();
@@ -121,18 +120,26 @@ export default async function main() {
 
     const rows = documents.map((document) => {
       const properties = Object.values(document).map((property) => {
+        if (typeof property === "string") {
+          // escape double quotes
+          return `"${property.replaceAll('"', '""')}"`;
+        }
+
         const p = `"${property}"`;
+
         if (p === `"null"`) return '""';
         return p;
       });
       const row = properties.join(",");
       return row;
+    }).sort((ra, rb) => {
+      // sorts by the first column
+      const [a] = ra.split(",");
+      const [b] = rb.split(",");
+      return a < b ? -1 : 1;
     });
 
-    const csv = [
-      columnHeaders,
-      ...rows,
-    ].join("\n");
+    const csv = [columnHeaders, ...rows].join("\n");
 
     await Deno.writeTextFile(
       path.join(outputPath, `${dynoutConfig.table_name}_${dateStr}.csv`),
@@ -146,5 +153,6 @@ export default async function main() {
     );
   }
 
-  spinner.succeed(`success! ${cyan(`${documents.length}`)} documents written`);
+  console.log(`success! ${cyan(`${documents.length}`)} documents written`);
+  spinner.stop();
 }
